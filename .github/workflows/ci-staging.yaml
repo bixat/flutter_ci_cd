@@ -77,7 +77,7 @@ jobs:
         with:
           args: deploy --only hosting --public web-build
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           PROJECT_ID: default
   
   beta_ios:
@@ -98,9 +98,10 @@ jobs:
       uses: wzieba/Firebase-Distribution-Github-Action@v1.0.0
       with:
         appId: ${{secrets.FIREBASE_IOS_APPID}}
-        token: ${{secrets.FIREBASE_TOKEN}}
         group: testers
         file: Runner.ipa
+      env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
 
   beta_apk:
     name: Upload Android Beta to Firebase App Distribution
@@ -120,7 +121,8 @@ jobs:
       uses: wzieba/Firebase-Distribution-Github-Action@v1.0.0
       with:
         appId: ${{secrets.FIREBASE_ANDROID_APPID}}
-        token: ${{secrets.FIREBASE_TOKEN}}
         group: testers
         file: app-release.aap
+      env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
     
