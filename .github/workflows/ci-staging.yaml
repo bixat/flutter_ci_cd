@@ -95,7 +95,7 @@ jobs:
       with:
         name: ios-build
     - name: Upload IPA
-      uses: wzieba/Firebase-Distribution-Github-Action@v1.0.0
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
       with:
         appId: ${{secrets.FIREBASE_IOS_APPID}}
         groups: testers
@@ -118,7 +118,8 @@ jobs:
       with:
         name: apk-build
     - name: Upload APK
-      uses: wzieba/Firebase-Distribution-Github-Action@v1.0.0
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+
       with:
         appId: ${{secrets.FIREBASE_ANDROID_APPID}}
         groups: testers
