@@ -29,5 +29,5 @@ jobs:
     - name: Statically analyze the Dart code for any errors.
       run: flutter analyze .
 
-    # - name: Test model & view example
-    #   run: flutter test
+    - name: Run Test
+      run: flutter test
