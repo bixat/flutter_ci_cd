@@ -4,22 +4,22 @@ on:
     branches:
       - staging
 jobs:
-  build_web:
-    name: Build Flutter (Web)
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: subosito/flutter-action@v1
-      with:
-          channel: 'stable'
-    - run: flutter pub get
-    - run: flutter config --enable-web
-    - run: flutter build web
-    - name: Archive Production Artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: web-build
-        path: build/web
+  # build_web:
+  #   name: Build Flutter (Web)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - uses: subosito/flutter-action@v1
+  #     with:
+  #         channel: 'stable'
+  #   - run: flutter pub get
+  #   - run: flutter config --enable-web
+  #   - run: flutter build web
+  #   - name: Archive Production Artifact
+  #     uses: actions/upload-artifact@master
+  #     with:
+  #       name: web-build
+  #       path: build/web
 
   build_ios:
     name: Build Flutter (iOS)
@@ -61,25 +61,25 @@ jobs:
         name: app-armeabi-v7a-release.apk
         path: build/app/outputs/flutter-apk
 
-  deploy_web:
-    name: Deploy Web to Firebase Hosting
-    needs: build_web
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Download Artifact
-        uses: actions/download-artifact@master
-        with:
-          name: web-build
-          path: web-build
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting --public web-build
-        env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-          PROJECT_ID: default
+  # deploy_web:
+  #   name: Deploy Web to Firebase Hosting
+  #   needs: build_web
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@master
+  #     - name: Download Artifact
+  #       uses: actions/download-artifact@master
+  #       with:
+  #         name: web-build
+  #         path: web-build
+  #     - name: Deploy to Firebase
+  #       uses: w9jds/firebase-action@master
+  #       with:
+  #         args: deploy --only hosting --public web-build
+  #       env:
+  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  #         PROJECT_ID: default
   
   beta_ios:
     name: Upload iOS Beta to Firebase App Distribution
@@ -100,7 +100,7 @@ jobs:
       with:
         appId: ${{secrets.FIREBASE_IOS_APPID}}
         groups: testers
-        file: Runner.ipa
+        file: ios-build.ipa
         token: ${{secrets.FIREBASE_TOKEN}}
 
   beta_apk:
@@ -123,6 +123,6 @@ jobs:
       with:
         appId: ${{secrets.FIREBASE_ANDROID_APPID}}
         groups: testers
-        file: app-release.aap
+        file: app-armeabi-v7a-release.apk
         token: ${{secrets.FIREBASE_TOKEN}}
     
