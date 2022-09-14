@@ -35,10 +35,11 @@ jobs:
     - run: flutter pub get
     - run: flutter clean
     - run: flutter build ios --release --no-codesign
+    - run: cd ./build/ios/iphoneos && mkdir ./payload/ && mv ./Runner.app ./payload/ && zip -r ./ios-build.zip ./payload/ && mv ./ios-build.zip ./ios-build.ipa
     - name: Upload iPA
       uses: actions/upload-artifact@master
       with:
-        name: ios-build
+        name: ios-build.ipa
         path: build/ios/iphoneos
 
   build_apk:
@@ -57,8 +58,8 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@master
       with:
-        name: apk-build
-        path: build/app/outputs/apk/release
+        name: app-armeabi-v7a-release.apk
+        path: build/app/outputs/flutter-apk
 
   deploy_web:
     name: Deploy Web to Firebase Hosting
@@ -93,7 +94,7 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@master
       with:
-        name: ios-build
+        name: ios-build.ipa
     - name: Upload IPA
       uses: wzieba/Firebase-Distribution-Github-Action@v1
       with:
@@ -115,7 +116,7 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@master
       with:
-        name: apk-build
+        name: app-armeabi-v7a-release.apk
     - name: Upload APK
       uses: wzieba/Firebase-Distribution-Github-Action@v1
 
