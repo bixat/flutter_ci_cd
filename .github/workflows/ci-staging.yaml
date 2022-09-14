@@ -100,8 +100,7 @@ jobs:
         appId: ${{secrets.FIREBASE_IOS_APPID}}
         groups: testers
         file: Runner.ipa
-      env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        token: ${{secrets.FIREBASE_TOKEN}}
 
   beta_apk:
     name: Upload Android Beta to Firebase App Distribution
@@ -124,6 +123,5 @@ jobs:
         appId: ${{secrets.FIREBASE_ANDROID_APPID}}
         groups: testers
         file: app-release.aap
-      env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        token: ${{secrets.FIREBASE_TOKEN}}
     
