@@ -4,26 +4,26 @@ on:
     branches:
       - staging
 jobs:
-  # build_web:
-  #   name: Build Flutter (Web)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: subosito/flutter-action@v1
-  #     with:
-  #         channel: 'stable'
-  #   - run: flutter pub get
-  #   - run: flutter config --enable-web
-  #   - run: flutter build web
-  #   - name: Archive Production Artifact
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: web-build
-  #       path: build/web
+  build_web:
+    name: Build Flutter (Web)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: subosito/flutter-action@v1
+      with:
+          channel: 'stable'
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: web-build
+        path: build/web
 
-  build_ios:
-    name: Build Flutter (iOS)
-    runs-on: macOS-latest
+  build_apk:
+    name: Build Flutter (Android)
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-java@v1
@@ -33,56 +33,36 @@ jobs:
       with:
           channel: 'stable'
     - run: flutter pub get
-    - run: flutter build ios --release --no-codesign
-    - run: cd ./build/ios/iphoneos && mkdir ./payload/ && mv ./Runner.app ./payload/ && zip -r ./ios-build.zip ./payload/ && mv ./ios-build.zip ./ios-build.ipa
-    - name: Upload iPA
+    - run: flutter build apk --split-per-abi
+    - name: Upload APK
       uses: actions/upload-artifact@master
       with:
-        name: ios-build.ipa
-        path: build/ios/iphoneos
+        name: app-armeabi-v7a-release.apk
+        path: build/app/outputs/flutter-apk
 
-  # build_apk:
-  #   name: Build Flutter (Android)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: actions/setup-java@v1
-  #     with:
-  #       java-version: '12.x'
-  #   - uses: subosito/flutter-action@v2
-  #     with:
-  #         channel: 'stable'
-  #   - run: flutter pub get
-  #   - run: flutter build apk --split-per-abi
-  #   - name: Upload APK
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: app-armeabi-v7a-release.apk
-  #       path: build/app/outputs/flutter-apk
+  deploy_web:
+    name: Deploy Web to Firebase Hosting
+    needs: build_web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: web-build
+          path: web-build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting --public web-build
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          PROJECT_ID: default
 
-  # deploy_web:
-  #   name: Deploy Web to Firebase Hosting
-  #   needs: build_web
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@master
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: web-build
-  #         path: web-build
-  #     - name: Deploy to Firebase
-  #       uses: w9jds/firebase-action@master
-  #       with:
-  #         args: deploy --only hosting --public web-build
-  #       env:
-  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  #         PROJECT_ID: default
-  
-  beta_ios:
-    name: Upload iOS Beta to Firebase App Distribution
-    needs: [build_ios]
+  beta_apk:
+    name: Upload Android Beta to Firebase App Distribution
+    needs: [build_apk]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -93,35 +73,13 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@master
       with:
-        name: ios-build.ipa
-    - name: Upload IPA
+        name: app-armeabi-v7a-release.apk
+    - name: Upload APK
       uses: wzieba/Firebase-Distribution-Github-Action@v1
+
       with:
-        appId: ${{secrets.FIREBASE_IOS_APPID}}
+        appId: ${{secrets.FIREBASE_ANDROID_APPID}}
         groups: testers
-        file: ios-build.ipa
+        file: app-armeabi-v7a-release.apk
         token: ${{secrets.FIREBASE_TOKEN}}
-
-  # beta_apk:
-  #   name: Upload Android Beta to Firebase App Distribution
-  #   needs: [build_apk]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: set up JDK 1.8
-  #     uses: actions/setup-java@v1
-  #     with:
-  #       java-version: 1.8
-  #   - name: Download Artifact
-  #     uses: actions/download-artifact@master
-  #     with:
-  #       name: app-armeabi-v7a-release.apk
-  #   - name: Upload APK
-  #     uses: wzieba/Firebase-Distribution-Github-Action@v1
-
-  #     with:
-  #       appId: ${{secrets.FIREBASE_ANDROID_APPID}}
-  #       groups: testers
-  #       file: app-armeabi-v7a-release.apk
-  #       token: ${{secrets.FIREBASE_TOKEN}}
     
