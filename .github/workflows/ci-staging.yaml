@@ -1,4 +1,4 @@
-name: Staging CI
+name: CI Staging
 on:
   pull_request:
     branches:
