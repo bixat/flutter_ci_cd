@@ -1,4 +1,4 @@
-name: Dev CI
+name: CI Dev
 
 on:
   pull_request:
@@ -23,4 +23,4 @@ jobs:
       run: flutter analyze .
 
     - name: Run Test
-      run: flutter test
+      run: flutter tests
