@@ -2,3 +2,4 @@ build/
 .packages
 .dart_tool/
 .DS_Store
+cer_fastlane.json
