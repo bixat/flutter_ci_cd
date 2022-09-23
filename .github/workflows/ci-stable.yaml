@@ -125,9 +125,9 @@ jobs:
         working-directory: android
 
       - run: cd android; bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }}
-      - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
+      - run: cd android; bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
         if: ${{ github.event.inputs.lane == 'deploy' }}
-      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
+      - run: cd android; bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
         if: ${{ github.event.inputs.lane == 'promote' }}
         env:
           PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
