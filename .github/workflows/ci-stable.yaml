@@ -61,7 +61,7 @@ jobs:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           PROJECT_ID: default
 
-fastlane-build-deploy-android:
+  fastlane_build_deploy_android:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
