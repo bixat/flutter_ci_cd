@@ -55,8 +55,8 @@ lane :bump_version do |options|
     arguments: options,
     pubspec: "../pubspec.yaml"
   )
-  if(current_version != 'not_bump' && options[:push])
-    git_commit(path: "../pubspec.yaml", message: "bump version to #{current_version} from fastlane")
-    push_to_git_remote
-  end
+  # if(current_version != 'not_bump' && options[:push])
+  #   git_commit(path: "../pubspec.yaml", message: "bump version to #{current_version} from fastlane")
+  #   push_to_git_remote
+  # end
 end
