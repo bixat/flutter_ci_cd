@@ -16,7 +16,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 ### bump_version
 
 ```sh
-[bundle exec] fastlane bump_version
+[bundle exec] fastlane bump_version bump:(major, minor, patch or build)
 ```
 
 
@@ -26,29 +26,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android beta
+### android deploy
 
 ```sh
-[bundle exec] fastlane android beta
+[bundle exec] fastlane android deploy track:(beta, alpha, production, or internal)
 ```
 
-Submit a new beta build to Google Play
+Submit a new build to Google Play
 
-### android promote_to_production
+### android promote
 
 ```sh
-[bundle exec] fastlane android promote_to_production
+[bundle exec] fastlane android promote from:(beta, alpha, production, or internal) to:(beta, alpha, production, or internal)
 ```
 
-Promote beta track to prod
-
-### android production
-
-```sh
-[bundle exec] fastlane android production
-```
-
-Submit a new production build to Google Play
+Promote from track to another track
 
 ----
 
