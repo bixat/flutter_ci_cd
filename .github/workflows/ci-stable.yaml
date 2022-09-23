@@ -96,7 +96,7 @@ jobs:
         working-directory: android
 
       - run: cd android; bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:true
-      - run: cd android; bundle exec fastlane android ${{ github.event.inputs.lane || 'beta' }}
+      - run: bundle exec fastlane android ${{ github.event.inputs.lane || 'beta' }}
         env:
           PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         working-directory: android
