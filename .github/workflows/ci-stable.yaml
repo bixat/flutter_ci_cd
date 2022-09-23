@@ -61,7 +61,8 @@ jobs:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
           PROJECT_ID: default
 
-  fastlane_build_deploy_android:
+  fastlane-build-deploy-android:
+    name: Deploy Android Release to Play Store
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
