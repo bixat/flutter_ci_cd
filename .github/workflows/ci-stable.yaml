@@ -9,9 +9,8 @@ on:
         default: "beta"
         type: choice
         options:
-          - beta
-          - promote_to_production
-          - production
+          - promote
+          - deploy
       bump_version:
         description: "Fastlane Bump version"
         required: true
@@ -22,6 +21,36 @@ on:
           - patch
           - minor
           - major
+      track:
+        description: "Deploy to"
+        required: true
+        default: "alpha"
+        type: choice
+        options:
+          - production
+          - beta
+          - alpha
+          - internal
+      promote_from:
+        description: "Promote from"
+        required: true
+        default: "alpha"
+        type: choice
+        options:
+          - production
+          - beta
+          - alpha
+          - internal
+      promote_to:
+        description: "Promote to"
+        required: true
+        default: "beta"
+        type: choice
+        options:
+          - production
+          - beta
+          - alpha
+          - internal
 permissions: read-all
 jobs:
   # build_web:
@@ -95,8 +124,11 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: cd android; bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:true
-      - run: bundle exec fastlane android ${{ github.event.inputs.lane || 'beta' }}
+      - run: cd android; bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }}
+      - run: bundle exec fastlane android deploy track:github.event.inputs.track
+        if: ${{ github.event.inputs.bump_version == deploy }}
+      - run: bundle exec fastlane android promote from:github.event.inputs.promote_from to:github.event.inputs.promote_to
+        if: ${{ github.event.inputs.bump_version == promote }}
         env:
           PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         working-directory: android
