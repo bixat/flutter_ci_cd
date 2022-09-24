@@ -41,7 +41,8 @@ jobs:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
 
-  fastlane-deploy-promote-android:
+  fastlane-deploy-prod-android:
+    if: "!contains(github.event.head_commit.message, 'from fastlane')"
     name: Deploy Android Release to Production track
     runs-on: ubuntu-latest
     steps:
@@ -77,9 +78,9 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane bump_version push:${{ github.event.inputs.create_tag_and_push || true }} bump:${{ github.event.head_commit.message }}
+      - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{ github.event.head_commit.message }} branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:alpha
+      - run: bundle exec fastlane android deploy track:production
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
