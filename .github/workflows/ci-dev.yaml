@@ -10,9 +10,13 @@ jobs:
     # This job will run on ubuntu virtual machine
     runs-on: ubuntu-latest
     steps:
+    # Checkout Repo code
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.REPO_TOKEN }}
     # Setup the flutter environment.
     - uses: subosito/flutter-action@v1
-    - run: pwd
     - name: Get flutter dependencies.
       run: flutter pub get
     
