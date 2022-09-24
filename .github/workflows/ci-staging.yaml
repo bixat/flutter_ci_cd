@@ -1,6 +1,6 @@
 name: Deploy web & android for testing
 on:
-  pull_request:
+  push:
     branches:
       - staging
 jobs:
