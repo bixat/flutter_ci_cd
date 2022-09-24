@@ -102,6 +102,8 @@ jobs:
       # Checkout Repo code
       - name: Checkout Repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
       # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
@@ -124,13 +126,13 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: cd android; bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }}
-      - run: cd android; bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
-        env:
-            PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-        if: ${{ github.event.inputs.lane == 'deploy' }}
-      - run: cd android; bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
-        env:
-            PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-        if: ${{ github.event.inputs.lane == 'promote' }}
+      - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:true
+      # - run: cd android; bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
+      #   env:
+      #       PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+      #   if: ${{ github.event.inputs.lane == 'deploy' }}
+      # - run: cd android; bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
+      #   env:
+      #       PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+      #   if: ${{ github.event.inputs.lane == 'promote' }}
         working-directory: android

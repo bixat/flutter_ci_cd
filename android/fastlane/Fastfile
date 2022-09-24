@@ -44,8 +44,15 @@ lane :bump_version do |options|
     arguments: options,
     pubspec: "../pubspec.yaml"
   )
-  # if(current_version != 'not_bump' && options[:push])
+  if(current_version != 'not_bump' && options[:push])
   #   git_commit(path: "../pubspec.yaml", message: "bump version to #{current_version} from fastlane")
   #   push_to_git_remote
-  # end
+    sh "git config --global user.email m97.chahboun@gmail.com"
+    sh "git config --global user.name Mohammed chahboun"
+    sh "git config --global push.followTags true"
+    sh "git add ../../pubspec.yaml"
+    sh 'git commit -m "bump version to ' + current_version + ' from fastlane"'
+    sh 'git tag -a v'+current_version+' -m "Version '+current_version+'"'
+    sh "git push origin"
+  end
 end
