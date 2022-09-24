@@ -59,7 +59,7 @@ on:
 permissions: read-all
 jobs:
   fastlane-deploy-promote-android:
-    name: Deploy Android Release to Play Store
+    name: Deploy Or Promote Android Release
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
