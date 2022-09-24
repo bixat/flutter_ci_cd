@@ -1,4 +1,4 @@
-name: CD Stable
+name: Deploy Or Promote build Google Play
 on:
   # Enable manual run 
   workflow_dispatch:
@@ -21,6 +21,11 @@ on:
           - patch
           - minor
           - major
+      create_tag_and_push:
+        description: 'Create new tag & Push bump version'
+        required: true
+        default: true 
+        type: boolean
       track:
         description: "Deploy to"
         required: true
@@ -53,44 +58,7 @@ on:
           - internal
 permissions: read-all
 jobs:
-  # build_web:
-  #   name: Build Flutter (Web)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: subosito/flutter-action@v1
-  #     with:
-  #         channel: 'stable'
-  #   - run: flutter pub get
-  #   - run: flutter config --enable-web
-  #   - run: flutter build web
-  #   - name: Archive Production Artifact
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: web-build
-  #       path: build/web
-
-  # deploy_web:
-  #   name: Deploy Web to Firebase Hosting
-  #   needs: build_web
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@master
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: web-build
-  #         path: web-build
-  #     - name: Deploy to Firebase
-  #       uses: w9jds/firebase-action@master
-  #       with:
-  #         args: deploy --only hosting --public web-build
-  #       env:
-  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  #         PROJECT_ID: default
-
-  fastlane-build-deploy-android:
+  fastlane-deploy-promote-android:
     name: Deploy Android Release to Play Store
     runs-on: ubuntu-latest
     steps:
@@ -102,6 +70,8 @@ jobs:
       # Checkout Repo code
       - name: Checkout Repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
       # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
@@ -124,12 +94,13 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: cd android; bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }}
-      - run: cd android; bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
+      - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:${{ github.event.inputs.create_tag_and_push || true }}
+      - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         if: ${{ github.event.inputs.lane == 'deploy' }}
-      - run: cd android; bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
+        working-directory: android
+      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         if: ${{ github.event.inputs.lane == 'promote' }}
