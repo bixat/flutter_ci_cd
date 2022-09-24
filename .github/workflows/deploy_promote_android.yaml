@@ -95,13 +95,14 @@ jobs:
         working-directory: android
 
       - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:${{ github.event.inputs.create_tag_and_push || true }}
+        working-directory: android
       - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
+        working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         if: ${{ github.event.inputs.lane == 'deploy' }}
-        working-directory: android
       - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
+        working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         if: ${{ github.event.inputs.lane == 'promote' }}
-        working-directory: android
