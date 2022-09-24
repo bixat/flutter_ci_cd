@@ -3,3 +3,5 @@ build/
 .dart_tool/
 .DS_Store
 cer_fastlane.json
+android/fastlane/Appfile
+android/Gemfile.lock
