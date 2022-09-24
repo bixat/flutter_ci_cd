@@ -41,10 +41,10 @@ end
 
 lane :bump_version do |options|
   current_version = flutter_bump_version(
-    arguments: options,
+    part: options[:bump],
     pubspec: "../pubspec.yaml"
   )
-  if(current_version != 'not_bump' && options[:push])
+  if(options[:push])
     sh "git config --global user.email m97.chahboun@gmail.com"
     sh "git config --global user.name Mohammed chahboun"
     sh "git config --global push.followTags true"
