@@ -41,7 +41,7 @@ jobs:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
 
-  fastlane-deploy-promote-android:
+  fastlane-deploy-staging-android:
     if: "!contains(github.event.head_commit.message, 'from fastlane')"
     name: Deploy Android Release to Alpha track
     runs-on: ubuntu-latest
