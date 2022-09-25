@@ -29,7 +29,7 @@ platform :android do
   end
 
   desc "Promote from track to another track"
-  lane :promote do options
+  lane :promote do |options|
     upload_to_play_store(
       track: options[:from] || "alpha",
       track_promote_to: options[:to] || "beta",
