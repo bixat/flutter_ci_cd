@@ -14,10 +14,9 @@ on:
       bump_version:
         description: "Fastlane Bump version"
         required: true
-        default: "bump_version"
+        default: "patch"
         type: choice
         options:
-          - build
           - patch
           - minor
           - major
@@ -94,14 +93,14 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:${{ github.event.inputs.create_tag_and_push || true }}
+      - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version }} push:${{ github.event.inputs.create_tag_and_push }} branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
+      - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track }}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
         if: ${{ github.event.inputs.lane == 'deploy' }}
-      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
+      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from }} to:${{ github.event.inputs.promote_to }}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
