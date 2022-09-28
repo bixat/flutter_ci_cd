@@ -1,0 +1,15 @@
+name: Check Last Commit Message for Bump version
+
+on:
+  pull_request:
+    branches:
+    - staging  
+    
+jobs:
+  check_last_commit:
+      steps:
+      - uses: actions/checkout@v1
+      - name: Check Last Commit message.
+        description: Check Last Commit message should have which version part you will bump when merge it, or will bump as default build
+        run: exit 1
+        if: "!contains(github.event.head_commit.message, 'patch') || !contains(github.event.head_commit.message, 'minor') || !contains(github.event.head_commit.message, 'major')"
