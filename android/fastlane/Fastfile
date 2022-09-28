@@ -41,7 +41,7 @@ end
 
 lane :bump_version do |options|
   current_version = flutter_bump_version(
-    part: options[:bump],
+    parts: options[:bump],
     pubspec: "../pubspec.yaml"
   )
   if(options[:push])
