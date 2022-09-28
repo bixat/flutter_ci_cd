@@ -1,30 +1,21 @@
-name: Deploy Or Promote build Google Play
+name: Deploy Android & Web
 on:
-  # Enable manual run 
+  # Enable manual run
   workflow_dispatch:
     inputs:
-      lane:
-        description: "Fastlane lane"
-        required: true
-        default: "beta"
-        type: choice
-        options:
-          - promote
-          - deploy
       bump_version:
         description: "Fastlane Bump version"
         required: true
-        default: "bump_version"
+        default: "patch"
         type: choice
         options:
-          - build
           - patch
           - minor
           - major
       create_tag_and_push:
         description: 'Create new tag & Push bump version'
         required: true
-        default: true 
+        default: true
         type: boolean
       track:
         description: "Deploy to"
@@ -36,30 +27,47 @@ on:
           - beta
           - alpha
           - internal
-      promote_from:
-        description: "Promote from"
-        required: true
-        default: "alpha"
-        type: choice
-        options:
-          - production
-          - beta
-          - alpha
-          - internal
-      promote_to:
-        description: "Promote to"
-        required: true
-        default: "beta"
-        type: choice
-        options:
-          - production
-          - beta
-          - alpha
-          - internal
+
 permissions: read-all
 jobs:
-  fastlane-deploy-promote-android:
-    name: Deploy Or Promote Android Release
+  # build_web:
+  #   name: Build Flutter (Web)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - uses: subosito/flutter-action@v1
+  #     with:
+  #         channel: 'stable'
+  #   - run: flutter pub get
+  #   - run: flutter config --enable-web
+  #   - run: flutter build web
+  #   - name: Archive Production Artifact
+  #     uses: actions/upload-artifact@master
+  #     with:
+  #       name: web-build
+  #       path: build/web
+
+  # deploy_web:
+  #   name: Deploy Web to Firebase Hosting
+  #   needs: build_web
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@master
+  #     - name: Download Artifact
+  #       uses: actions/download-artifact@master
+  #       with:
+  #         name: web-build
+  #         path: web-build
+  #     - name: Deploy to Firebase
+  #       uses: w9jds/firebase-action@master
+  #       with:
+  #         args: deploy --only hosting --public web-build
+  #       env:
+  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  #         PROJECT_ID: default
+  deploy-android:
+    name: Build & Deploy Android Release to ${{ github.event.inputs.track }} track
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
@@ -94,15 +102,9 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version || 'build' }} push:${{ github.event.inputs.create_tag_and_push || true }}
+      - run: bundle exec fastlane bump_version bump:${{ github.event.inputs.bump_version }} push:${{ github.event.inputs.create_tag_and_push }} branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'beta' }}
-        working-directory: android
-        env:
-            PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-        if: ${{ github.event.inputs.lane == 'deploy' }}
-      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from || 'alpha' }} to:${{ github.event.inputs.promote_to || 'beta' }}
+      - run: bundle exec fastlane android deploy track:${{ github.event.inputs.track }}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-        if: ${{ github.event.inputs.lane == 'promote' }}
