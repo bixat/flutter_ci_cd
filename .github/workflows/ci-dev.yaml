@@ -1,7 +1,7 @@
 name: CI Dev
 
 on:
-  push:
+  pull_request:
     branches:
     - dev
 
@@ -33,10 +33,10 @@ jobs:
 
     - name: Convert labels to version parts
       id: labels_to_version_parts
-      run: "dart labels_to_version_parts.dart join(github.event.pull_request.labels.*.name,' ')"
+      run: "dart labels_to_version_parts.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
     
   bump_version_based_on_labels:
-    if: ${{ (github.event.pull_request.merged == true)
+    if: ${{ (github.event.pull_request.merged == true) }}
     runs-on: ubuntu-latest
     needs: analyze_code_and_test
     steps:
