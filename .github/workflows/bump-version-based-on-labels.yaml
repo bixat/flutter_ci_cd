@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
     - dev
-    # types:
-    #   - closed
+    types:
+      - closed
 
 jobs:
   setup_dart_and_run_converter:
@@ -13,6 +13,8 @@ jobs:
     outputs:
       parts: ${{ steps.labels_to_version_parts.outputs.parts }}
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1.3
       - name: Convert labels to version parts
@@ -22,8 +24,10 @@ jobs:
   bump_version_based_on_labels:
     if: ${{ (github.event.pull_request.merged == true) }}
     runs-on: ubuntu-latest
-    needs: analyze_code_and_test
+    needs: setup_dart_and_run_converter
     steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
     # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
     - name: Setup Fastlane
       uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
@@ -31,5 +35,5 @@ jobs:
         ruby-version: "2.6"
         bundler-cache: true
         working-directory: android
-    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{needs.analyze_code_and_test.outputs.parts}} tag:false
+    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{needs.setup_dart_and_run_converter.outputs.parts}} tag:false
       working-directory: android
