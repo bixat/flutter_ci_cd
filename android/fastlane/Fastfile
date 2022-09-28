@@ -44,13 +44,15 @@ lane :bump_version do |options|
     parts: options[:bump],
     pubspec: "../pubspec.yaml"
   )
-  if(options[:push])
+  if(options[:push] && options[:tag])
     sh "git config --global user.email m97.chahboun@gmail.com"
     sh "git config --global user.name Mohammed chahboun"
     sh "git config --global push.followTags true"
     sh "git add ../../pubspec.yaml"
     sh 'git commit -m "bump version to ' + current_version + ' from fastlane"'
-    sh 'git tag -a v'+current_version+' -m "Version '+current_version+'"'
+    if tag
+      sh 'git tag -a v'+current_version+' -m "Version '+current_version+'"'
+    end
     sh "git push origin HEAD:"+options[:branch]
   end
 end
