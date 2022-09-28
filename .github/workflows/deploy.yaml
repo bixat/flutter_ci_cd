@@ -1,6 +1,6 @@
 name: Deploy Android & Web
 on:
-  # Enable manual run 
+  # Enable manual run
   workflow_dispatch:
     inputs:
       bump_version:
@@ -15,7 +15,7 @@ on:
       create_tag_and_push:
         description: 'Create new tag & Push bump version'
         required: true
-        default: true 
+        default: true
         type: boolean
       track:
         description: "Deploy to"

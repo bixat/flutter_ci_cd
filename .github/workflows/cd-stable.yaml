@@ -78,7 +78,7 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{ github.event.head_commit.message }} branch:${{ github.ref_name }}
+      - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{ github.event.head_commit.message }}
         working-directory: android
       - run: bundle exec fastlane android deploy track:production
         working-directory: android

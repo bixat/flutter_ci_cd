@@ -1,6 +1,6 @@
 name: Promote Google Play build from track to another
 on:
-  # Enable manual run 
+  # Enable manual run
   workflow_dispatch:
     inputs:
       promote_from:
