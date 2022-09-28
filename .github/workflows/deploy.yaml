@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       bump_version:
-        description: "Fastlane Bump version"
+        description: "Fastlane Bump version example : patch,minor,major (without spaces)"
         required: true
         default: "patch"
         type: string
@@ -14,7 +14,7 @@ on:
         required: true
         default: true
         type: boolean
-        
+
       track:
         description: "Deploy to"
         required: true
