@@ -35,5 +35,5 @@ jobs:
         ruby-version: "2.6"
         bundler-cache: true
         working-directory: android
-    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{needs.setup_dart_and_run_converter.outputs.parts}} tag:false
+    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{needs.setup_dart_and_run_converter.outputs.parts}} tag:true
       working-directory: android
