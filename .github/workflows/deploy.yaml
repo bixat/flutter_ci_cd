@@ -4,19 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       bump_version:
-        description: "Fastlane Bump version"
+        description: "Fastlane Bump version example : patch,minor,major (without spaces)"
         required: true
         default: "patch"
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+        type: string
+
       create_tag_and_push:
         description: 'Create new tag & Push bump version'
         required: true
         default: true
         type: boolean
+
       track:
         description: "Deploy to"
         required: true

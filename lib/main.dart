@@ -12,9 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter CI-CD',
-      theme: ThemeData(
-        primarySwatch: Colors.brown,
-      ),
+      theme: ThemeData(primarySwatch: Colors.brown, primaryColor: Colors.blue),
       home: const MyHomePage(title: 'Flutter CI-CD Home Page'),
     );
   }
@@ -47,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text(widget.title),
       ),
       body: Center(
