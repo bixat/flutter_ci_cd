@@ -1,5 +1,5 @@
 name: Bump app version based on PR labels
-
+# Workflow for every new feature/enhance/fix
 on:
   pull_request:
     branches:
