@@ -15,7 +15,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-      - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1.3
       - name: Convert labels to version parts
         id: labels_to_version_parts
@@ -28,12 +27,12 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
+    # Setup Ruby, Bundler, Gemfile
     - name: Setup Fastlane
       uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
       with:
         ruby-version: "2.6"
         bundler-cache: true
         working-directory: android
-    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} bump:${{needs.setup_dart_and_run_converter.outputs.parts}} tag:true
+    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} ${{needs.setup_dart_and_run_converter.outputs.parts}} bump_build:false
       working-directory: android
