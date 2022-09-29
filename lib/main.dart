@@ -12,9 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter CI-CD',
-      theme: ThemeData(
-        primarySwatch: Colors.brown,
-      ),
+      theme: ThemeData(primarySwatch: Colors.brown, primaryColor: Colors.blue),
       home: const MyHomePage(title: 'Flutter CI-CD Home Page'),
     );
   }
