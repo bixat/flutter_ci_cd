@@ -9,6 +9,7 @@ on:
 
 jobs:
   setup_dart_and_run_converter:
+    if: ${{ (github.event.pull_request.merged == true) }}
     runs-on: ubuntu-latest
     outputs:
       parts: ${{ steps.labels_to_version_parts.outputs.parts }}

@@ -55,7 +55,21 @@ jobs:
         id: labels_to_track
         run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
 
+  setup_dart_and_run_converter:
+    if: ${{ (github.event.pull_request.merged == true) }}
+    runs-on: ubuntu-latest
+    outputs:
+      track: ${{ steps.labels_to_track.outputs.track }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1.3
+      - name: Convert labels to track
+        id: labels_to_track
+        run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
+
   promote-android:
+    if: ${{ (github.event.pull_request.merged == true) }}
     needs: setup_dart_and_run_converter
     name: Promote Android Release from ${{needs.setup_dart_and_run_converter.outputs.track}} to production
     runs-on: ubuntu-latest
@@ -98,6 +112,7 @@ jobs:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
 
   create_release:
+    if: ${{ (github.event.pull_request.merged == true) }}
     name: "Create Release"
     runs-on: "ubuntu-latest"
     steps:
