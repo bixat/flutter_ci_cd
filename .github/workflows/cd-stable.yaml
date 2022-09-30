@@ -57,7 +57,7 @@ jobs:
         run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
       - name: Get Project Version
         id: get_project_version
-        run: "dart pub add yaml;dart get_project_version.dart"
+        run: "dart pub add yaml;dart pub get;dart get_project_version.dart"
 
 
   promote-android:
