@@ -1,8 +1,10 @@
 name: Deploy web & android for testing
 on:
-  push:
+  pull_request:
     branches:
-      - staging
+    - staging
+    types:
+      - closed
 jobs:
   # build_web:
   #   name: Build Flutter (Web)
@@ -40,11 +42,23 @@ jobs:
   #       env:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
-
+  setup_dart_and_run_converter:
+    if: "!contains(github.event.head_commit.message, 'from fastlane')"
+    runs-on: ubuntu-latest
+    outputs:
+      track: ${{ steps.labels_to_track.outputs.track }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1.3
+      - name: Convert labels to track
+        id: labels_to_track
+        run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
   fastlane-deploy-staging-android:
     if: "!contains(github.event.head_commit.message, 'from fastlane')"
     name: Deploy Android Release to Alpha track
     runs-on: ubuntu-latest
+    needs: setup_dart_and_run_converter
     steps:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -80,7 +94,7 @@ jobs:
 
       - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:alpha
+      - run: bundle exec fastlane android deploy track:${{needs.setup_dart_and_run_converter.outputs.track}}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
