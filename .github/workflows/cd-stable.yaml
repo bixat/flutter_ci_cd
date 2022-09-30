@@ -42,6 +42,7 @@ jobs:
   #       env:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
+  
   setup_dart_and_run_converter:
     runs-on: ubuntu-latest
     outputs:
@@ -95,3 +96,13 @@ jobs:
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+
+  create_release:
+    name: "Create Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.REPO_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
