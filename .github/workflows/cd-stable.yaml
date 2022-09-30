@@ -1,8 +1,10 @@
 name: Deploy web & Promote Android to production
 on:
-  push:
+  pull_request:
     branches:
-      - stable
+    - stable
+    types:
+      - closed
 jobs:
   # build_web:
   #   name: Build Flutter (Web)
