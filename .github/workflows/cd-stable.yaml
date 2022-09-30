@@ -91,7 +91,7 @@ jobs:
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
-
+        
       - run: bundle exec fastlane android promote from:${{needs.setup_dart_and_run_converter.outputs.track}} to:production
         working-directory: android
         env:
