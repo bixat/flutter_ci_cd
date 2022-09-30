@@ -42,8 +42,9 @@ jobs:
   #       env:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
-  
+
   setup_dart_and_run_converter:
+    if: ${{ (github.event.pull_request.merged == true) }}
     runs-on: ubuntu-latest
     outputs:
       track: ${{ steps.labels_to_track.outputs.track }}
@@ -56,6 +57,7 @@ jobs:
         run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
 
   promote-android:
+    if: ${{ (github.event.pull_request.merged == true) }}
     needs: setup_dart_and_run_converter
     name: Promote Android Release from ${{needs.setup_dart_and_run_converter.outputs.track}} to production
     runs-on: ubuntu-latest
@@ -98,6 +100,7 @@ jobs:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
 
   create_release:
+    if: ${{ (github.event.pull_request.merged == true) }}
     name: "Create Release"
     runs-on: "ubuntu-latest"
     steps:
