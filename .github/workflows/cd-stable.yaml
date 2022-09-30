@@ -1,8 +1,10 @@
-name: Deploy web & android for production
+name: Deploy web & Promote Android to production
 on:
-  push:
+  pull_request:
     branches:
-      - stable
+    - stable
+    types:
+      - closed
 jobs:
   # build_web:
   #   name: Build Flutter (Web)
@@ -40,10 +42,22 @@ jobs:
   #       env:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
+  
+  setup_dart_and_run_converter:
+    runs-on: ubuntu-latest
+    outputs:
+      track: ${{ steps.labels_to_track.outputs.track }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1.3
+      - name: Convert labels to track
+        id: labels_to_track
+        run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
 
-  fastlane-deploy-prod-android:
-    if: "!contains(github.event.head_commit.message, 'from fastlane')"
-    name: Deploy Android Release to Production track
+  promote-android:
+    needs: setup_dart_and_run_converter
+    name: Promote Android Release from ${{needs.setup_dart_and_run_converter.outputs.track}} to production
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
@@ -56,7 +70,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.REPO_TOKEN }}
-      # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
+      # Setup Ruby, Bundler, Gemfile
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
         with:
@@ -77,10 +91,18 @@ jobs:
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
-
-      - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
-        working-directory: android
-      - run: bundle exec fastlane android deploy track:production
+        
+      - run: bundle exec fastlane android promote from:${{needs.setup_dart_and_run_converter.outputs.track}} to:production
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+
+  create_release:
+    name: "Create Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.REPO_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
