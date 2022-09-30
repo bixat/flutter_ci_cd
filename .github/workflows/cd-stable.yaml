@@ -55,18 +55,6 @@ jobs:
         id: labels_to_track
         run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
 
-  setup_dart_and_run_converter:
-    if: ${{ (github.event.pull_request.merged == true) }}
-    runs-on: ubuntu-latest
-    outputs:
-      track: ${{ steps.labels_to_track.outputs.track }}
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1.3
-      - name: Convert labels to track
-        id: labels_to_track
-        run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
 
   promote-android:
     if: ${{ (github.event.pull_request.merged == true) }}
