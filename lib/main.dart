@@ -29,15 +29,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  _onTapButton(String action) {
     setState(() {
-      _counter++;
-    });
-  }
-
-  void _decrementCounter() {
-    setState(() {
-      _counter--;
+      if (action == "+") {
+        _counter++;
+      } else {
+        _counter--;
+      }
     });
   }
 
@@ -67,12 +65,16 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           FloatingActionButton(
-            onPressed: _incrementCounter,
+            onPressed: () {
+              _onTapButton("+");
+            },
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
           FloatingActionButton(
-            onPressed: _decrementCounter,
+            onPressed: () {
+              _onTapButton("-");
+            },
             tooltip: 'Decrement',
             child: const Icon(Icons.minimize),
           )
