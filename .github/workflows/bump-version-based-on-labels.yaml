@@ -21,7 +21,6 @@ jobs:
         run: "dart workflows_utils/labels_to_version_parts.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
     
   bump_version_based_on_labels:
-    if: ${{ (github.event.pull_request.merged == true) }}
     runs-on: ubuntu-latest
     needs: setup_dart_and_run_converter
     steps:
@@ -34,5 +33,5 @@ jobs:
         ruby-version: "2.6"
         bundler-cache: true
         working-directory: android
-    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} ${{needs.setup_dart_and_run_converter.outputs.parts}} bump_build:false
+    - run: bundle exec fastlane bump_version push:true branch:${{ github.head_ref }} ${{needs.setup_dart_and_run_converter.outputs.parts}} bump_build:false
       working-directory: android
