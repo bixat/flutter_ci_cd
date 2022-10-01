@@ -19,7 +19,7 @@ jobs:
       - uses: dart-lang/setup-dart@v1.3
       - name: Convert labels to version parts
         id: labels_to_version_parts
-        run: "dart labels_to_version_parts.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
+        run: "dart workflows_utils/labels_to_version_parts.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
     
   bump_version_based_on_labels:
     if: ${{ (github.event.pull_request.merged == true) }}

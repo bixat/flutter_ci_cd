@@ -54,7 +54,7 @@ jobs:
       - uses: dart-lang/setup-dart@v1.3
       - name: Convert labels to track
         id: labels_to_track
-        run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
+        run: "dart workflows_utils/labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
       - name: Get Project Version
         id: get_project_version
         run: "dart get_project_version.dart"
