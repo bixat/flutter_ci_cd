@@ -52,7 +52,7 @@ jobs:
       - uses: dart-lang/setup-dart@v1.3
       - name: Convert labels to track
         id: labels_to_track
-        run: "dart labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
+        run: "dart workflows_utils/labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
   fastlane-deploy-staging-android:
     name: Deploy Android Release to Alpha track
     runs-on: ubuntu-latest
