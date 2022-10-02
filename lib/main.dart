@@ -13,30 +13,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter CI-CD',
       theme: ThemeData(primarySwatch: Colors.brown, primaryColor: Colors.blue),
-      home: const MyHomePage(title: 'Flutter CI-CD Home Page'),
+      home: MyHomePage(title: 'Flutter CI-CD Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  final ValueNotifier _counter = ValueNotifier(0);
   final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  MyHomePage({super.key, required this.title});
 
   _onTapButton(String action) {
-    setState(() {
-      if (action == "+") {
-        _counter++;
-      } else {
-        _counter--;
-      }
-    });
+    if (action == "+") {
+      _counter.value++;
+    } else {
+      _counter.value--;
+    }
   }
 
   @override
@@ -44,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
@@ -54,10 +46,14 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            ValueListenableBuilder(
+                valueListenable: _counter,
+                builder: (context, _, __) {
+                  return Text(
+                    '$_counter',
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                }),
           ],
         ),
       ),
