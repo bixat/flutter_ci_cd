@@ -50,7 +50,7 @@ class MyHomePage extends StatelessWidget {
                 valueListenable: _counter,
                 builder: (context, _, __) {
                   return Text(
-                    '$_counter',
+                    '${_counter.value}',
                     style: Theme.of(context).textTheme.headline4,
                   );
                 }),
