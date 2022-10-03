@@ -5,10 +5,16 @@ changelog:
         - major
     - title: Exciting New Features 🎉
       labels:
-        - minor
+        - feature
     - title: Fix Bugs 🐛
       labels:
-        - patch
+        - fix
+    - title: Enhancement ✅
+      labels:
+        - enhance
+    - title: Documentation 📑
+      labels:
+        - doc
     - title: Other Changes
       labels:
         - "*"
