@@ -9,7 +9,6 @@ Future<void> main(List<String> labels) async {
     parts = versionParts.join(",");
     parts = "bump:$parts";
   }
-  await Process.run(
-      'echo "parts=$parts" >> \$GITHUB_ENV', [],
+  await Process.run('echo "parts=$parts" >> \$GITHUB_ENV', [],
       runInShell: true);
 }
