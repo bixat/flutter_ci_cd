@@ -8,6 +8,6 @@ Future<void> main(List<String> labels) async {
   if (trackLabels.isNotEmpty) {
     track = trackLabels.first;
   }
-  await Process.run('echo "track=$track" >> \$GITHUB_ENV', [],
+  await Process.run('echo "track=$track" >> \$GITHUB_OUTPUT', [],
       runInShell: true);
 }

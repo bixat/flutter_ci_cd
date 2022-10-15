@@ -6,6 +6,6 @@ main() async {
   String currentVersion = text.substring(text.indexOf("version: ") + 9,
       text.indexOf("\n", text.indexOf("version: ")));
   await Process.run(
-      'echo "project_version=v${currentVersion.trim()}" >> \$GITHUB_ENV', [],
+      'echo "project_version=v${currentVersion.trim()}" >> \$GITHUB_OUTPUT', [],
       runInShell: true);
 }
