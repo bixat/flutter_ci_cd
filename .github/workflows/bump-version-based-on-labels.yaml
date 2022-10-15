@@ -33,8 +33,8 @@ jobs:
         ruby-version: "2.6"
         bundler-cache: true
         working-directory: android
+    - run: echo ${{needs.setup_dart_and_run_converter.outputs.parts}}
     - run: echo ${{needs.setup_dart_and_run_converter.parts}}
-    - run: echo ${{needs.env.parts}}
-    - run: echo ${{env.parts}}
-    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} ${{needs.setup_dart_and_run_converter.parts}} bump_build:false
+    - run: echo ${{needs.outputs.parts}}
+    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} ${{needs.setup_dart_and_run_converter.outputs.parts}} bump_build:false
       working-directory: android
