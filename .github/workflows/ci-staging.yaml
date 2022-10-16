@@ -42,17 +42,6 @@ jobs:
   #       env:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
-  setup_dart_and_run_converter:
-    runs-on: ubuntu-latest
-    outputs:
-      track: ${{ steps.labels_to_track.outputs.track }}
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1.3
-      - name: Convert labels to track
-        id: labels_to_track
-        run: "dart workflows_utils/labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
   fastlane-deploy-staging-android:
     name: Deploy Android Release to Alpha track
     runs-on: ubuntu-latest
@@ -66,8 +55,11 @@ jobs:
       # Checkout Repo code
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_TOKEN }}
+      - name: Setup Dart Language
+        uses: dart-lang/setup-dart@v1.3
+      - name: Convert labels to track
+        id: labels_to_track
+        run: "dart workflows_utils/labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
       # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
@@ -92,7 +84,7 @@ jobs:
 
       - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:${{needs.setup_dart_and_run_converter.outputs.track}}
+      - run: bundle exec fastlane android deploy track:${{env.track}}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
