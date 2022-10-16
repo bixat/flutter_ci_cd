@@ -45,7 +45,7 @@ jobs:
 
   promote-android:
     if: ${{ (github.event.pull_request.merged == true) }}
-    name: Promote Android Release from ${{env.track}} to production
+    name: Promote Android Release from selected track to production
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
