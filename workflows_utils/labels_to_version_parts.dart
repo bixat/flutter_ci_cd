@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'add_to_output.dart';
+
 const List<String> options = ["major", "minor", "patch"];
 Future<void> main(List<String> labels) async {
   List<String> versionParts = List.from(labels);
@@ -7,8 +9,7 @@ Future<void> main(List<String> labels) async {
   String parts = "";
   if (versionParts.isNotEmpty) {
     parts = versionParts.join(",");
-    parts = "bump:$parts";
+    parts = "parts=bump:$parts";
   }
-  await Process.run('echo "parts=$parts" >> \$GITHUB_OUTPUT', [],
-      runInShell: true);
+  await setOutput(parts);
 }

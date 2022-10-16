@@ -1,13 +1,12 @@
-import 'dart:io';
+import 'add_to_output.dart';
 
 const List<String> options = ["alpha", "beta", "internal"];
 Future<void> main(List<String> labels) async {
   List<String> trackLabels = List.from(labels);
   trackLabels.removeWhere((e) => !options.contains(e));
-  String track = "alpha";
+  String track = "track=alpha";
   if (trackLabels.isNotEmpty) {
-    track = trackLabels.first;
+    track = "track=${trackLabels.first}";
   }
-  await Process.run('echo "track=$track" >> \$GITHUB_OUTPUT', [],
-      runInShell: true);
+  await setOutput(track);
 }

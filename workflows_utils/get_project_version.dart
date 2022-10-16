@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'add_to_output.dart';
+
 main() async {
   final data = File('./pubspec.yaml');
   String text = data.readAsStringSync();
   String currentVersion = text.substring(text.indexOf("version: ") + 9,
       text.indexOf("\n", text.indexOf("version: ")));
-  await Process.run(
-      'echo "project_version=v${currentVersion.trim()}" >> \$GITHUB_OUTPUT', [],
-      runInShell: true);
+  String versionEnvVar = "project_version=v${currentVersion.trim()}";
+  await setOutput(versionEnvVar);
 }
