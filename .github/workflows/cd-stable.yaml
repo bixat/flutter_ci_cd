@@ -63,7 +63,7 @@ jobs:
   promote-android:
     if: ${{ (github.event.pull_request.merged == true) }}
     needs: setup_dart_and_run_scripts
-    name: Promote Android Release from ${{needs.setup_dart_and_run_scripts.outputs.track}} to production
+    name: Promote Android Release from ${{env.track}} to production
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
@@ -98,7 +98,7 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane android promote from:${{needs.setup_dart_and_run_scripts.outputs.track}} to:production
+      - run: bundle exec fastlane android promote from:${{env.track}} to:production
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
@@ -112,5 +112,5 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.REPO_TOKEN }}"
-          automatic_release_tag: "${{needs.setup_dart_and_run_scripts.outputs.project_version}}"
+          automatic_release_tag: "${{env.project_version}}"
           prerelease: false

@@ -36,5 +36,5 @@ jobs:
     - run: echo ${{needs.setup_dart_and_run_converter.outputs.parts}}
     - run: echo ${{needs.setup_dart_and_run_converter.parts}}
     - run: echo ${{needs.outputs.parts}}
-    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} ${{needs.setup_dart_and_run_converter.outputs.parts}} bump_build:false
+    - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }} ${{env.parts}} bump_build:false
       working-directory: android
