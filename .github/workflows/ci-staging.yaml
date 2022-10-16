@@ -92,7 +92,7 @@ jobs:
 
       - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:${{needs.setup_dart_and_run_converter.outputs.track}}
+      - run: bundle exec fastlane android deploy track:${{env.track}}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
