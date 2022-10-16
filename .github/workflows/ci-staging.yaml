@@ -45,7 +45,6 @@ jobs:
   fastlane-deploy-staging-android:
     name: Deploy Android Release to Alpha track
     runs-on: ubuntu-latest
-    needs: setup_dart_and_run_converter
     steps:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2

@@ -45,7 +45,6 @@ jobs:
 
   promote-android:
     if: ${{ (github.event.pull_request.merged == true) }}
-    needs: setup_dart_and_run_scripts
     name: Promote Android Release from ${{env.track}} to production
     runs-on: ubuntu-latest
     steps:
