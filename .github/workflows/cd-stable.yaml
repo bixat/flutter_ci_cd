@@ -43,27 +43,9 @@ jobs:
   #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   #         PROJECT_ID: default
 
-  setup_dart_and_run_scripts:
-    runs-on: ubuntu-latest
-    outputs:
-      track: ${{ steps.labels_to_track.outputs.track }}
-      project_version: ${{ steps.get_project_version.outputs.project_version }}
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1.3
-      - name: Convert labels to track
-        id: labels_to_track
-        run: "dart workflows_utils/labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
-      - name: Get Project Version
-        id: get_project_version
-        run: "dart workflows_utils/get_project_version.dart"
-
-
   promote-android:
     if: ${{ (github.event.pull_request.merged == true) }}
-    needs: setup_dart_and_run_scripts
-    name: Promote Android Release from ${{needs.setup_dart_and_run_scripts.outputs.track}} to production
+    name: Promote Android Release from ${{env.track}} to production
     runs-on: ubuntu-latest
     steps:
       - name: Setup Flutter
@@ -74,8 +56,12 @@ jobs:
       # Checkout Repo code
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_TOKEN }}
+      - name: Setup Dart Language
+        uses: dart-lang/setup-dart@v1.3
+      - name: Convert labels to track
+        run: "dart workflows_utils/labels_to_track.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"
+      - name: Get Project Version
+        run: "dart workflows_utils/get_project_version.dart"
       # Setup Ruby, Bundler, Gemfile
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
@@ -98,19 +84,13 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane android promote from:${{needs.setup_dart_and_run_scripts.outputs.track}} to:production
+      - run: bundle exec fastlane android promote from:${{env.track}} to:production
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-
-  create_release:
-    if: ${{ (github.event.pull_request.merged == true) }}
-    needs: setup_dart_and_run_scripts
-    name: "Create Release"
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Create Release for ${{env.project_version}}
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.REPO_TOKEN }}"
-          automatic_release_tag: "${{needs.setup_dart_and_run_scripts.outputs.project_version}}"
+          automatic_release_tag: "${{env.project_version}}"
           prerelease: false

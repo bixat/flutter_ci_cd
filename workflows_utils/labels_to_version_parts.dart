@@ -1,11 +1,13 @@
+import 'add_to_output.dart';
+
 const List<String> options = ["major", "minor", "patch"];
-void main(List<String> labels) {
+Future<void> main(List<String> labels) async {
   List<String> versionParts = List.from(labels);
   versionParts.removeWhere((e) => !options.contains(e));
   String parts = "";
   if (versionParts.isNotEmpty) {
     parts = versionParts.join(",");
-    parts = "bump:$parts";
+    parts = "parts=bump:$parts";
   }
-  print("::set-output name=parts::$parts");
+  await setOutput(parts);
 }

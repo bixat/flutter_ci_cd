@@ -24,7 +24,7 @@ jobs:
       run: flutter format --set-exit-if-changed .
 
     - name: Statically analyze the Dart code for any errors.
-      run: flutter analyze ./lib
+      run: flutter analyze
 
     - name: Run Test
       run: flutter test

@@ -1,10 +1,12 @@
+import 'add_to_output.dart';
+
 const List<String> options = ["alpha", "beta", "internal"];
-void main(List<String> labels) {
+Future<void> main(List<String> labels) async {
   List<String> trackLabels = List.from(labels);
   trackLabels.removeWhere((e) => !options.contains(e));
-  String track = "alpha";
+  String track = "track=alpha";
   if (trackLabels.isNotEmpty) {
-    track = trackLabels.first;
+    track = "track=${trackLabels.first}";
   }
-  print("::set-output name=track::$track");
+  await setOutput(track);
 }
