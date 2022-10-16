@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'add_to_output.dart';
 
 const List<String> options = ["major", "minor", "patch"];
