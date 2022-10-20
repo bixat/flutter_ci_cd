@@ -1,30 +1,30 @@
-# name: CI Dev
+name: CI Dev
 
-# on:
-#   pull_request:
-#     branches:
-#     - dev
+on:
+  pull_request:
+    branches:
+    - dev
 
-# jobs:
-#   analyze_code_and_test:
-#     # This job will run on ubuntu virtual machine
-#     runs-on: ubuntu-latest
-#     steps:
-#     # Checkout Repo code
-#     - name: Checkout Repo
-#       uses: actions/checkout@v3
-#       with:
-#         token: ${{ secrets.REPO_TOKEN }}
-#     # Setup the flutter environment.
-#     - uses: subosito/flutter-action@v1
-#     - name: Get flutter dependencies.
-#       run: flutter pub get
+jobs:
+  analyze_code_and_test:
+    # This job will run on ubuntu virtual machine
+    runs-on: ubuntu-latest
+    steps:
+    # Checkout Repo code
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.REPO_TOKEN }}
+    # Setup the flutter environment.
+    - uses: subosito/flutter-action@v1
+    - name: Get flutter dependencies.
+      run: flutter pub get
 
-#     - name: Check for any formatting issues in the code.
-#       run: flutter format --set-exit-if-changed .
+    - name: Check for any formatting issues in the code.
+      run: flutter format --set-exit-if-changed .
 
-#     - name: Statically analyze the Dart code for any errors.
-#       run: flutter analyze
+    - name: Statically analyze the Dart code for any errors.
+      run: flutter analyze
 
-#     - name: Run Test
-#       run: flutter test
+    - name: Run Test
+      run: flutter test
