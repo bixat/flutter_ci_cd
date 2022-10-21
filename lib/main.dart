@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/views/counter_view.dart';
 import 'package:flutter_ci_cd/views/mini_view.dart';
+import 'package:flutter_ci_cd/views/post_view.dart';
 import 'package:mvc_rocket/mvc_rocket.dart';
 
 void main() {
@@ -21,6 +22,9 @@ class App extends StatelessWidget {
               ),
           '/counter': (BuildContext context) => CounterExample(
                 title: "Counter",
+              ),
+          '/post': (BuildContext context) => PostExample(
+                title: "100 Posts",
               ),
         },
         title: '🚀 MVCRocket 🚀 Package',
@@ -98,6 +102,7 @@ class MyApp extends StatelessWidget {
                   }),
               const Example("Mini View", "miniView"),
               const Example("Counter View", "counter"),
+              const Example("100 Posts", "post"),
             ],
           ),
         ),
