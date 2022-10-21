@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  mvc_rocket:
+    git: https://github.com/JahezAcademy/mvc_rocket
 
 
   # The following adds the Cupertino Icons font to your application.
