@@ -27,7 +27,7 @@ class App extends StatelessWidget {
           '/post': (BuildContext context) => PostExample(
                 title: "100 Posts",
               ),
-               '/photo': (BuildContext context) => PhotoExample(
+          '/photo': (BuildContext context) => PhotoExample(
                 title: "5000 Photos",
               ),
         },
