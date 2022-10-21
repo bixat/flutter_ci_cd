@@ -52,9 +52,7 @@ lane :bump_version do |options|
     sh "git add ../../pubspec.yaml"
     sh 'git commit -m "bump version from '+result[:previous]+ ' to ' + result[:new] + ' by fastlane plugin"'
     sh 'git tag -a v'+result[:new]+' -m "Version '+result[:new]+'"'
-    if(options[:bump])
-      sh 'git pull --rebase origin '+options[:branch]
-    end
+    sh 'git pull --rebase origin '+options[:branch]
     sh "git push origin HEAD:"+options[:branch]
   end
 end

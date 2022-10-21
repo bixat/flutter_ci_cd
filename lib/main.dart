@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/views/counter_view.dart';
 import 'package:flutter_ci_cd/views/mini_view.dart';
+import 'package:flutter_ci_cd/views/photo_view.dart';
 import 'package:flutter_ci_cd/views/post_view.dart';
 import 'package:mvc_rocket/mvc_rocket.dart';
 
@@ -25,6 +26,9 @@ class App extends StatelessWidget {
               ),
           '/post': (BuildContext context) => PostExample(
                 title: "100 Posts",
+              ),
+          '/photo': (BuildContext context) => PhotoExample(
+                title: "5000 Photos",
               ),
         },
         title: '🚀 MVCRocket 🚀 Package',
@@ -103,6 +107,7 @@ class MyApp extends StatelessWidget {
               const Example("Mini View", "miniView"),
               const Example("Counter View", "counter"),
               const Example("100 Posts", "post"),
+              const Example("5000 Photos", "photo"),
             ],
           ),
         ),
