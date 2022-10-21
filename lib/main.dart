@@ -1,81 +1,133 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_ci_cd/views/counter_view.dart';
+import 'package:flutter_ci_cd/views/mini_view.dart';
+import 'package:mvc_rocket/mvc_rocket.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter CI-CD',
-      theme: ThemeData(primarySwatch: Colors.brown, primaryColor: Colors.blue),
-      home: MyHomePage(title: 'Flutter CI-CD Home Page'),
-    );
+        routes: <String, WidgetBuilder>{
+          '/miniView': (BuildContext context) => MiniView(
+                title: "MiniView Example",
+              ),
+          '/counter': (BuildContext context) => CounterExample(
+                title: "Counter",
+              ),
+        },
+        title: '🚀 MVCRocket 🚀 Package',
+        theme: ThemeData(
+          primaryColor: Colors.brown,
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.brown),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MyApp());
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final ValueNotifier _counter = ValueNotifier(0);
-  final String title;
-  MyHomePage({super.key, required this.title});
-
-  _onTapButton(String action) {
-    if (action == "+") {
-      _counter.value++;
-    } else {
-      _counter.value--;
-    }
+// ignore: must_be_immutable
+class MyApp extends StatelessWidget {
+  final ValueNotifier<double> dx = ValueNotifier<double>(0.1);
+  late BuildContext cntx;
+  final List<String> exps = [
+    "MVCRocket Package",
+    "Link your app with API easily",
+    "One Package All Features",
+    "Make your work easy",
+    "this animation make by crazy code with timer"
+  ];
+  int index = 0;
+  MyApp({Key? key}) : super(key: key) {
+    const String baseUrl = 'https://jsonplaceholder.typicode.com';
+    // create request object
+    RocketRequest request = RocketRequest(url: baseUrl);
+    // save it, for use it from any screen
+    Rocket.add(rocketRequestKey, request);
+    Timer.periodic(const Duration(milliseconds: 5), (timer) {
+      if (dx.value <=
+          MediaQuery.of(cntx).size.width +
+              (MediaQuery.of(cntx).size.width * 0.04)) {
+        dx.value += 0.5;
+      } else {
+        dx.value = -MediaQuery.of(cntx).size.width;
+        if (index < exps.length - 1) {
+          index++;
+        } else {
+          index = 0;
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    cntx = context;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: Text(title),
+        title: const Text("🚀 MVCRocket 🚀 PACKAGE"),
+        centerTitle: true,
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            const Placeholder(),
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            ValueListenableBuilder(
-                valueListenable: _counter,
-                builder: (context, _, __) {
-                  return Text(
-                    '${_counter.value}',
-                    style: Theme.of(context).textTheme.headline4,
-                  );
-                }),
-          ],
+        child: SizedBox(
+          height: context.height * 0.6,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ValueListenableBuilder(
+                  valueListenable: dx,
+                  builder: (context, _, __) {
+                    return Transform.translate(
+                      offset: Offset(dx.value, 1),
+                      //dx: dx.value,
+                      child: Text(
+                        exps[index],
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  }),
+              const Example("Mini View", "miniView"),
+              const Example("Counter View", "counter"),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              _onTapButton("+");
-            },
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              _onTapButton("-");
-            },
-            tooltip: 'Decrement',
-            child: const Icon(Icons.minimize),
-          )
-        ],
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+class Example extends StatelessWidget {
+  final String title, to;
+  const Example(this.title, this.to, {Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: context.width * 0.6,
+      height: context.height * 0.1,
+      child: TextButton(
+          child: Text(
+            title,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24.0,
+                color: Colors.brown),
+          ),
+          onPressed: () => Navigator.pushNamed(context, "/$to")),
+    );
+  }
+}
+
+extension SizeDevice on BuildContext {
+  double get height => MediaQuery.of(this).size.height;
+  double get width => MediaQuery.of(this).size.width;
 }
