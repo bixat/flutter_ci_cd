@@ -6,9 +6,11 @@ changelog:
     - title: Exciting New Features 🎉
       labels:
         - feature
+        - minor
     - title: Fix Bugs 🐛
       labels:
         - fix
+        - patch
     - title: Enhancement ✅
       labels:
         - enhance
