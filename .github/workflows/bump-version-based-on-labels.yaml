@@ -30,4 +30,4 @@ jobs:
         working-directory: android
       - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
         working-directory: android
-        if: ${{ (github.event.pull_request.openedMove bump build from staging to bump version worflow == true) }}
+        if: ${{ (github.event.pull_request.opened == true) }}
