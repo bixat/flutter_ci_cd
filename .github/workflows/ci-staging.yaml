@@ -80,6 +80,9 @@ jobs:
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
+
+      - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
+        working-directory: android
       - run: bundle exec fastlane android deploy track:${{env.track}}
         working-directory: android
         env:
