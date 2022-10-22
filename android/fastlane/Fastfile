@@ -45,7 +45,7 @@ lane :bump_version do |options|
     parts: options[:bump],
     pubspec: "../pubspec.yaml"
   )
-  if(options[:push] && options[:bump])
+  if(options[:push] || options[:bump])
     sh "git config --global user.email m97.chahboun@gmail.com"
     sh "git config --global user.name Mohammed chahboun"
     sh "git config --global push.followTags true"
