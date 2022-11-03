@@ -11,5 +11,23 @@ CI/CD & Branching template for flutter apps.
 
 ## Repo workflow
 
-
 ![alt text](repo_workflow.jpg)
+
+
+## TODO
+- [x] Bump version based on labels when label PR on dev branch
+- [x] Create tag based on current version
+- [x] Analyze & Test Dev branch PR
+- [x] Bump build (Version code) when merge PR on staging branch
+- [x] Deploy Android to play store on testing track based on labels (default alpha) 
+- [x] Deploy Web for testing
+- [ ] Deploy IOS on Testflight for Testing
+- [ ] Notify Testers (slack, telegram...)
+- [x] Promote Android to production when merge PR on stable branch
+- [ ] Promote IOS to production when merge PR on stable branch
+- [x] Deploy Web to production when merge PR on stable branch
+- [ ] Upload desktop version on release assets (windows, linux & mac)
+- [x] Create release & generate release notes based on PR's when merge PR on stable
+- [ ] Notify Users (slack, telegram...)
+- [x] Manually Workflows for deploy & promote build
+
