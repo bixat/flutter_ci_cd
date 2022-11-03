@@ -19,10 +19,12 @@ jobs:
         run: "dart workflows_utils/labels_to_version_parts.dart ${{ join(github.event.pull_request.labels.*.name,' ') }}"      
       # Setup Ruby, Bundler, Gemfile
       - name: Setup Fastlane
+        if: env.parts != ''
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
         with:
           ruby-version: "2.6"
           bundler-cache: true
           working-directory: android
       - run: bundle exec fastlane bump_version branch:${{ github.head_ref }} ${{env.parts}} bump_build:false
+        if: env.parts != ''
         working-directory: android
