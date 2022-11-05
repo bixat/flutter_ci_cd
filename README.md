@@ -42,9 +42,9 @@ WIP : Windows, Linux, Mac, & IOS
 2. Add follow keys to https://github.com/username/repo/settings/secrets/actions replace username & repo :
 	- `PLAY_STORE_UPLOAD_KEY` : Past your keystore file encode64 you can use [this](https://www.base64encode.org) for encode file
 	- `REPO_TOKEN` : Follow [steps](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-	- `KEYSTORE_STORE_PASSWORD` : storePassword from kestore.jks file
-	- `KEYSTORE_KEY_PASSWORD` : keyPassword from kestore.jks file
-	- `KEYSTORE_KEY_ALIAS` : keyAlias from kestore.jks file
+	- `KEYSTORE_STORE_PASSWORD` : storePassword from key.properties file
+	- `KEYSTORE_KEY_PASSWORD` : keyPassword from key.properties file
+	- `KEYSTORE_KEY_ALIAS` : keyAlias from key.properties file
 	- `GCP_SA_KEY` :  normal service account key(json format) or a base64 encoded service account key with the needed permissions for what you are trying to deploy/update. If you're deploying functions, you would also need the Cloud Functions Developer role, and the Cloud Scheduler Admin for scheduled functions. Since the deploy service account is using the App Engine default service account in the deploy process, it also needs the Service Account User role. If you're only doing Hosting, Firebase Hosting Admin is enough. https://firebase.google.com/docs/hosting/github-integration
 	- `PLAY_STORE_CONFIG_JSON`: follow [steps](https://www.skoumal.com/en/generate-json-key-for-google-play-deployment/)
 3. Create required labels :
@@ -59,4 +59,4 @@ WIP : Windows, Linux, Mac, & IOS
 - [bump flutter app version fastlane-plugin](https://github.com/M97Chahboun/fastlane-plugin-flutter_bump_version)
 - [MVCRocket Package](https://github.com/JahezAcademy/mvc_rocket/)
 
-⚙️ Feel free to add 💡 idea or 🖥 contribute for make flutter developers life easy 😊
+⚙️ Feel free to add 💡 idea or 🖥 contribute 😊
