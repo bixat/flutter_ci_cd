@@ -1,0 +1,126 @@
+name: Draft Github Release
+on:
+  # Enable manual run
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag to create (e.g. v2.10.0). Must include 'v' and must match pubspec"
+        required: true
+        default: "v2.10.0"
+        type: string
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  draft-release:
+    name: Draft Github release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Draft release with release notes
+        id: create_release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+
+  create-build:
+    name: Create ${{ matrix.target }} build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        target: [macOS, Windows, Linux]
+        include:
+          - os: macos-latest
+            target: macOS
+            build_target: macos
+            build_path: build/macos/Build/Products/Release
+            asset_extension: .zip
+            asset_content_type: application/zip
+          - os: windows-latest
+            target: Windows
+            build_target: windows
+            build_path: build\windows\runner\Release
+            asset_extension: .zip
+            asset_content_type: application/zip
+          - os: ubuntu-latest
+            target: Linux
+            build_target: linux
+            build_path: build/linux/x64/release/bundle
+            asset_extension: .tar.gz
+            asset_content_type: application/gzip
+
+      # Disable fail-fast as we want results from all even if one fails.
+      fail-fast: false
+    needs: draft-release
+    steps:
+      # Set up Flutter.
+      - name: Clone Flutter repository with master channel
+        uses: subosito/flutter-action@dbf1fa04f4d2e52c33185153d06cdb5443aa189d
+        with:
+          channel: master
+
+      - name: Install Linux dependencies
+        if: matrix.target == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev
+     
+      - name: Enable desktop support
+        run: |
+          flutter config --enable-linux-desktop
+          flutter config --enable-macos-desktop
+          flutter config --enable-windows-desktop
+      - run: flutter doctor -v
+      - name: Checkout repo code
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+      - run: flutter create .
+      - name: Configure Firebase option
+        run: echo "$FIREBASE_OPTIONS" >> lib/firebase_options.dart
+        env:
+            FIREBASE_OPTIONS: ${{ secrets.FIREBASE_OPTIONS }}
+
+      - name: Build iOS App
+        run: |
+            flutter pub get
+            flutter pub upgrade
+            flutter build -v ${{ matrix.build_target }} --release --flavor dev -t lib/main_dev.dart --dart-define API_URL=${{ secrets.API_URL }} --dart-define VAP_ID_KEY=${{ secrets.VAP_ID_KEY }}
+      # Package the build.
+      - name: Copy VC redistributables to release directory for Windows
+        if: matrix.target == 'Windows'
+        run: |
+          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') .
+          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
+          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
+        working-directory: ${{ matrix.build_path }}
+      - name: Compress build for Linux
+        if: matrix.target == 'Linux'
+        run: tar czf $GITHUB_WORKSPACE/jahez${{ matrix.target }}.tar.gz *
+        working-directory: ${{ matrix.build_path }}
+      - name: Compress build for macOS
+        if: matrix.target == 'macOS'
+        run: ditto -c -k --sequesterRsrc --keepParent Flutter\ jahez.app $GITHUB_WORKSPACE/jahez${{ matrix.target }}.zip
+        working-directory: ${{ matrix.build_path }}
+      - name: Compress build for Windows
+        if: matrix.target == 'Windows'
+        run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\jahez${{ matrix.target }}.zip
+        working-directory: ${{ matrix.build_path }}
+
+      # Upload the build.
+      - name: Add packaged build to release draft
+        id: upload_release_asset
+        uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        with:
+          upload_url: ${{ needs.draft-release.outputs.upload_url }}
+          asset_path: ./jahez${{ matrix.target }}${{ matrix.asset_extension }}
+          asset_name: jahez${{ matrix.target }}${{ matrix.asset_extension }}
+          asset_content_type: ${{ matrix.asset_content_type }}
+          overwrite: true
