@@ -6,6 +6,7 @@ on:
       - dev
     paths: 
       - 'lib/**'
+      - 'test/**'
 
 jobs:
   analyze_code_and_test:
