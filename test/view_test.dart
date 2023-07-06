@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ci_cd/models/photo_model.dart';
 import 'package:flutter_ci_cd/models/post_model.dart';
+import 'package:flutter_ci_cd/models/todo.dart';
 import 'package:flutter_ci_cd/models/user_model.dart';
 import 'package:flutter_ci_cd/views/photo_view.dart';
 import 'package:flutter_ci_cd/views/post_view.dart';
+import 'package:flutter_ci_cd/views/todos_view.dart';
 import 'package:flutter_ci_cd/views/user_view.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
+
 import 'dummy_data.dart';
-import 'fake_rocket_request.dart';
+import 'fake_rocket_client.dart';
 
 void main() {
   testWidgets('Test Post view (setup,refresh,update)', (tester) async {
     // Create request object
-    RocketRequestTest request = RocketRequestTest(postData);
-    Rocket.add(rocketRequestKey, request);
+    RocketClientTest request = RocketClientTest(postData);
+    Rocket.add(request);
     // Build our app and trigger a frame.
     await tester.pumpWidget(MaterialApp(
         home: PostExample(
@@ -34,7 +36,7 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(find.text(postData.first[postTitleField]), findsOneWidget);
     // Change first post title
-    await tester.tap(find.byIcon(Icons.update));
+    await tester.tap(find.byIcon(Icons.update).first);
     await tester.pump();
     // Title changed
     expect(find.text("This Title changed"), findsOneWidget);
@@ -42,8 +44,8 @@ void main() {
 
   testWidgets('Test user view (setup,refresh,update)', (tester) async {
     // Create request object
-    RocketRequestTest request = RocketRequestTest(userData);
-    Rocket.add(rocketRequestKey, request);
+    RocketClientTest request = RocketClientTest(userData);
+    Rocket.add(request);
     // Build our app and trigger a frame.
     await tester.pumpWidget(MaterialApp(
         home: UserExample(
@@ -53,7 +55,7 @@ void main() {
     expect(find.bySubtype<CircularProgressIndicator>(), findsOneWidget);
     // After 2 second data loaded
     await tester.pump(const Duration(seconds: 1));
-    expect(find.text("User :${userData.first[userNameField]}"), findsOneWidget);
+    expect(find.text("${userData.first[userNameField]}"), findsOneWidget);
     // Click to refresh for reload data
     await tester.tap(find.byIcon(Icons.get_app));
     await tester.pump();
@@ -61,21 +63,21 @@ void main() {
     expect(find.bySubtype<CircularProgressIndicator>(), findsOneWidget);
     // After 1 second data loaded
     await tester.pump(const Duration(seconds: 1));
-    expect(find.text("User :${userData.first[userNameField]}"), findsOneWidget);
+    expect(find.text("${userData.first[userNameField]}"), findsOneWidget);
     // Change first username
     await tester.tap(find.byIcon(Icons.update));
     await tester.pump();
     // Name changed
-    expect(find.text("User :Mohammed CHAHBOUN 💙"), findsOneWidget);
+    expect(find.text("Mohammed CHAHBOUN 💙"), findsOneWidget);
     // After 2 seconds data updated from API
     await tester.pump(const Duration(seconds: 2));
-    expect(find.text("User :${userData.first[userNameField]}"), findsOneWidget);
+    expect(find.text("${userData.first[userNameField]}"), findsOneWidget);
   });
 
   testWidgets('Test Photo view setup', (tester) async {
     // Create request object
-    RocketRequestTest request = RocketRequestTest(photoData);
-    Rocket.add(rocketRequestKey, request);
+    RocketClientTest request = RocketClientTest(photoData);
+    Rocket.add(request);
     // Build our app and trigger a frame.
     await tester.pumpWidget(MaterialApp(
         home: PhotoExample(
@@ -85,6 +87,32 @@ void main() {
     expect(find.bySubtype<CircularProgressIndicator>(), findsOneWidget);
     // After 1 second data loaded
     await tester.pump(const Duration(seconds: 1));
-    expect(find.text(photoData.first[photoTitleField]), findsOneWidget);
+    expect(find.text(photoData.first[postTitleField]), findsOneWidget);
+  });
+
+  testWidgets('Test Todo view (setup,refresh,update)', (tester) async {
+    // Create request object
+    RocketClientTest request = RocketClientTest(todosData);
+    Rocket.add(request);
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(MaterialApp(
+        home: TodosExample(
+      title: 'test',
+    )));
+    // Check loading
+    expect(find.bySubtype<CircularProgressIndicator>(), findsOneWidget);
+    // After 1 second data loaded
+    await tester.pump(const Duration(seconds: 1));
+    // Check todo title
+    expect(find.text(todosData.first[todoTitleField]), findsOneWidget);
+    final Finder checkBox = find.byType(Checkbox);
+    Checkbox todoCheckBox = tester.firstWidget(checkBox);
+    // check inital todo status
+    expect(todoCheckBox.value, todosData.first[todoCompletedField]);
+    await tester.tap(checkBox);
+    await tester.pump();
+    todoCheckBox = tester.firstWidget(checkBox);
+    // check if todo status changed
+    expect(todoCheckBox.value, !todosData.first[todoCompletedField]);
   });
 }

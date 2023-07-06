@@ -1,5 +1,5 @@
 import 'package:flutter_ci_cd/models/user_submodel/geo_submodel.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
 const String addressStreetField = "street";
 const String addressSuiteField = "suite";

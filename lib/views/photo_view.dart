@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/models/photo_model.dart';
 import 'package:flutter_ci_cd/requests/photo_request.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
 class PhotoExample extends StatelessWidget {
   PhotoExample({Key? key, required this.title}) : super(key: key);
   final String title;
-  final Photo photo = Rocket.add<Photo>(photosEndpoint, Photo());
+  final Photo photo = Rocket.add<Photo>(Photo());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,13 +18,14 @@ class PhotoExample extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           child: RocketView(
             model: photo,
+            loader: const CircularProgressIndicator(),
             // get 5000 items
             call: () => GetPhotos.getPhotos(photo),
-            builder: (context) {
+            builder: (context, modelState) {
               return ListView.builder(
-                  itemCount: photo.multi!.length,
+                  itemCount: photo.all!.length,
                   itemBuilder: (BuildContext context, int index) {
-                    Photo currentphoto = photo.multi![index];
+                    Photo currentphoto = photo.all![index];
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(

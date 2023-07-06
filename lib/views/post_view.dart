@@ -1,15 +1,16 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/models/post_model.dart';
 import 'package:flutter_ci_cd/requests/post_request.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
 class PostExample extends StatelessWidget {
   // Save your model to use on another screen
   // readOnly means if you close and open this screen you will use same data without update it from Api
   // [rocket] is instance of Mccontroller injected in Object by extension for use it easily anywhere
-  final Post post = Rocket.add<Post>(postsEndpoint, Post(), readOnly: true);
+  final Post post = Post().save(readOnly: true);
 
   PostExample({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -46,7 +47,7 @@ class PostExample extends StatelessWidget {
                 // callType: CallType.callAsStream,
                 // secondsOfStream: 1,
                 // customized your loading (default widget is CircularProgressIndicator)
-                // loader:CustomLoading(),
+                loader: const CircularProgressIndicator(),
 
                 // handle errors
                 onError: (RocketException exception, Function() reload) {
@@ -66,16 +67,14 @@ class PostExample extends StatelessWidget {
                     ),
                   );
                 },
-                builder: (context) {
+                builder: (context, state) {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height * 0.852,
                     child: ListView.builder(
-                      itemCount: post.multi == null ? 5 : post.multi!.length,
+                      itemCount: post.all!.length,
                       itemBuilder: (BuildContext context, int index) {
                         // your data saved in multi list as Post model
-                        Post currentPost = post.multi == null
-                            ? Post(userId: 0, title: "loading", body: "loading")
-                            : post.multi![index];
+                        Post currentPost = post.all![index];
                         return ListTile(
                             leading: Text(currentPost.id.toString()),
                             title: Text(currentPost.title!),
@@ -83,6 +82,12 @@ class PostExample extends StatelessWidget {
                               color: Colors.brown,
                               icon: const Icon(Icons.update),
                               onPressed: () {
+                                List titles = post.all!
+                                    .toJson(
+                                        include: ["title"], onlyValues: true)
+                                    .map((e) => e[0])
+                                    .toList();
+                                log("$titles");
                                 // update post data
                                 currentPost.updateFields(
                                     titleField: "This Title changed");
@@ -106,11 +111,11 @@ class PostExample extends StatelessWidget {
 class Details extends StatelessWidget {
   final int index;
   //  get your model by key
-  final Post post = Rocket.get<Post>(postsEndpoint);
+  final Post post = Rocket.get<Post>();
   Details(this.index, {Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    Post currentPost = post.multi![index];
+    Post currentPost = post.all![index];
     return Scaffold(
       appBar: AppBar(title: Text(currentPost.title!)),
       body: Center(
