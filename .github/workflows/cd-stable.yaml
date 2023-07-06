@@ -77,6 +77,6 @@ jobs:
             github.rest.repos.createRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                tag_name: "${{ env.project_version }}",
+                tag_name: "${{ env.version_name }} + ${{ env.version_version_code }}",
                 generate_release_notes: true
               });
