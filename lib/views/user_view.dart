@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/models/user_model.dart';
 import 'package:flutter_ci_cd/models/user_submodel/address_submodel.dart';
 import 'package:flutter_ci_cd/models/user_submodel/company_submodel.dart';
 import 'package:flutter_ci_cd/models/user_submodel/geo_submodel.dart';
 import 'package:flutter_ci_cd/requests/user_request.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
 class UserExample extends StatelessWidget {
-  final User users = Rocket.add<User>(usersEndpoint, User());
+  final User users = Rocket.add<User>(User());
   UserExample({Key? key, required this.title}) : super(key: key);
   final String title;
   @override
@@ -16,14 +16,15 @@ class UserExample extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      floatingActionButton: Container(
-          color: Theme.of(context).primaryColor,
-          child: TextButton(
-            child: Wrap(
-              children: const [Icon(Icons.get_app), Text("Get Data")],
-            ),
-            onPressed: () => GetUsers.getUsers(users),
-          )),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => GetUsers.getUsers(users),
+        label: const Text(
+          "Get Data",
+        ),
+        icon: const Icon(
+          Icons.get_app,
+        ),
+      ),
       body: SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -37,11 +38,12 @@ class UserExample extends StatelessWidget {
             // your model
             model: users,
             // your widget for show data from model
-            builder: (context) {
+            loader: const CircularProgressIndicator(),
+            builder: (context, modelState) {
               return ListView.builder(
-                itemCount: users.multi!.length,
+                itemCount: users.all!.length,
                 itemBuilder: (BuildContext context, int index) {
-                  User user = users.multi![index];
+                  User user = users.all![index];
                   Company company = user.company!;
                   Address address = user.address!;
                   Geo geo = address.geo!;
@@ -62,7 +64,7 @@ class UserExample extends StatelessWidget {
                               : null,
                         ),
                       ),
-                      title: Text("User :${user.name!}"),
+                      title: Text(user.name!),
                       trailing: IconButton(
                           icon: const Icon(Icons.update),
                           onPressed: () {
@@ -145,7 +147,7 @@ class OneUser extends StatelessWidget {
   late Address address;
   late Geo geo;
   OneUser(this.index, {Key? key}) : super(key: key) {
-    user = Rocket.get<User>(usersEndpoint).multi![index];
+    user = Rocket.get<User>().all![index];
     company = user.company!;
     address = user.address!;
     geo = address.geo!;
