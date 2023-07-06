@@ -3,7 +3,10 @@ name: CI Dev
 on:
   pull_request:
     branches:
-    - dev
+      - dev
+    paths: 
+      - 'lib/**'
+      - 'test/**'
 
 jobs:
   analyze_code_and_test:

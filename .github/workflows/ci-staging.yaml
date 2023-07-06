@@ -2,46 +2,30 @@ name: Deploy web & android for testing
 on:
   pull_request:
     branches:
-    - staging
+      - staging
     types:
       - closed
 jobs:
-  # build_web:
-  #   name: Build Flutter (Web)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: subosito/flutter-action@v1
-  #     with:
-  #         channel: 'stable'
-  #   - run: flutter pub get
-  #   - run: flutter config --enable-web
-  #   - run: flutter build web
-  #   - name: Archive Production Artifact
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: web-build
-  #       path: build/web
+  build_web:
+    name: Build Flutter (Web)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+          channel: 'stable'
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting --public web-build
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        PROJECT_ID: default
 
-  # deploy_web:
-  #   name: Deploy Web to Firebase Hosting
-  #   needs: build_web
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@master
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: web-build
-  #         path: web-build
-  #     - name: Deploy to Firebase
-  #       uses: w9jds/firebase-action@master
-  #       with:
-  #         args: deploy --only hosting --public web-build
-  #       env:
-  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  #         PROJECT_ID: default
+     
   fastlane-deploy-staging-android:
     name: Deploy Android Release to Alpha track
     runs-on: ubuntu-latest
@@ -83,7 +67,7 @@ jobs:
 
       - run: bundle exec fastlane bump_version push:true branch:${{ github.ref_name }}
         working-directory: android
-      - run: bundle exec fastlane android deploy track:${{env.track}}
+      - run: bundle exec fastlane android deploy track:${{ env.track }}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}

@@ -35,6 +35,8 @@ platform :android do
       track_promote_to: options[:to] || "beta",
       skip_upload_changelogs: true,
       json_key_data: ENV['PLAY_STORE_CONFIG_JSON'],
+      version_name: options[:version_name],
+      version_code: options[:version_code].to_i,
       )
   end
 end
