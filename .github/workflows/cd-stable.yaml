@@ -6,42 +6,25 @@ on:
     types:
       - closed
 jobs:
-  # build_web:
-  #   name: Build Flutter (Web)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: subosito/flutter-action@v1
-  #     with:
-  #         channel: 'stable'
-  #   - run: flutter pub get
-  #   - run: flutter config --enable-web
-  #   - run: flutter build web
-  #   - name: Archive Production Artifact
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: web-build
-  #       path: build/web
+  build_web:
+    name: Build Flutter (Web)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+          channel: 'stable'
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting --public web-build
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        PROJECT_ID: default
 
-  # deploy_web:
-  #   name: Deploy Web to Firebase Hosting
-  #   needs: build_web
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@master
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: web-build
-  #         path: web-build
-  #     - name: Deploy to Firebase
-  #       uses: w9jds/firebase-action@master
-  #       with:
-  #         args: deploy --only hosting --public web-build
-  #       env:
-  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  #         PROJECT_ID: default
 
   promote-android:
     if: ${{ (github.event.pull_request.merged == true) }}
@@ -84,7 +67,7 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane android promote from:${{env.track}} to:production
+      - run: bundle exec fastlane android promote from:${{ env.track }} to:production
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
@@ -94,6 +77,6 @@ jobs:
             github.rest.repos.createRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                tag_name: "${{env.project_version}}",
+                tag_name: "${{ env.project_version }}",
                 generate_release_notes: true
               });
