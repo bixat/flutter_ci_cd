@@ -1,12 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/views/counter_view.dart';
 import 'package:flutter_ci_cd/views/mini_view.dart';
 import 'package:flutter_ci_cd/views/photo_view.dart';
 import 'package:flutter_ci_cd/views/post_view.dart';
+import 'package:flutter_ci_cd/views/todos_view.dart';
 import 'package:flutter_ci_cd/views/user_view.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
 void main() {
   runApp(const App());
@@ -25,21 +24,23 @@ class App extends StatelessWidget {
           '/counter': (BuildContext context) => CounterExample(
                 title: "Counter",
               ),
+          '/user': (BuildContext context) => UserExample(
+                title: "10 Users",
+              ),
           '/post': (BuildContext context) => PostExample(
                 title: "100 Posts",
               ),
           '/photo': (BuildContext context) => PhotoExample(
                 title: "5000 Photos",
               ),
-          '/user': (BuildContext context) => UserExample(
-                title: "10 Users",
+          '/todo': (BuildContext context) => TodosExample(
+                title: "200 Todos",
               ),
         },
-        title: '🚀 MVCRocket 🚀 Package',
+        title: '🚀 Rocket Package 🚀',
         theme: ThemeData(
-          primaryColor: Colors.brown,
-          appBarTheme: const AppBarTheme(backgroundColor: Colors.brown),
-          visualDensity: VisualDensity.adaptivePlatformDensity,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
         ),
         home: MyApp());
   }
@@ -48,71 +49,41 @@ class App extends StatelessWidget {
 // ignore: must_be_immutable
 class MyApp extends StatelessWidget {
   final ValueNotifier<double> dx = ValueNotifier<double>(0.1);
-  late BuildContext cntx;
-  final List<String> exps = [
-    "MVCRocket Package",
-    "Link your app with API easily",
-    "One Package All Features",
-    "Make your work easy",
-    "this animation make by crazy code with timer"
-  ];
   int index = 0;
   MyApp({Key? key}) : super(key: key) {
     const String baseUrl = 'https://jsonplaceholder.typicode.com';
     // create request object
-    RocketRequest request = RocketRequest(url: baseUrl);
-    // save it, for use it from any screen
-    Rocket.add(rocketRequestKey, request);
-    Timer.periodic(const Duration(milliseconds: 5), (timer) {
-      if (dx.value <=
-          MediaQuery.of(cntx).size.width +
-              (MediaQuery.of(cntx).size.width * 0.04)) {
-        dx.value += 0.5;
-      } else {
-        dx.value = -MediaQuery.of(cntx).size.width;
-        if (index < exps.length - 1) {
-          index++;
-        } else {
-          index = 0;
-        }
-      }
-    });
+    RocketClient request = RocketClient(url: baseUrl);
+    // save it, for use from any screen
+    Rocket.add(request);
   }
 
   @override
   Widget build(BuildContext context) {
-    cntx = context;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("🚀 MVCRocket 🚀 PACKAGE"),
+        title: const Text('🚀 Rocket Package 🚀'),
         centerTitle: true,
       ),
       body: Center(
         child: SizedBox(
-          height: context.height * 0.6,
-          child: Column(
+          height: context.height * 0.8,
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ValueListenableBuilder(
-                  valueListenable: dx,
-                  builder: (context, _, __) {
-                    return Transform.translate(
-                      offset: Offset(dx.value, 1),
-                      //dx: dx.value,
-                      child: Text(
-                        exps[index],
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  }),
-              const Example("Mini View", "miniView"),
-              const Example("Counter View", "counter"),
-              const Example("100 Posts", "post"),
-              const Example("5000 Photos", "photo"),
-              const Example("10 Users", "user"),
+              Text(
+                '🚀 Rocket Package 🚀',
+                style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.brown),
+              ),
+              Example("Mini View", "miniView"),
+              Example("Counter View", "counter"),
+              Example("10 Users", "user"),
+              Example("100 Posts", "post"),
+              Example("5000 Photos", "photo"),
+              Example("200 Todos", "todo"),
             ],
           ),
         ),
@@ -130,6 +101,7 @@ class Example extends StatelessWidget {
       width: context.width * 0.6,
       height: context.height * 0.1,
       child: TextButton(
+          key: Key(to),
           child: Text(
             title,
             style: const TextStyle(

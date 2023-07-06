@@ -37,8 +37,10 @@ jobs:
       # Checkout Repo code
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_TOKEN }}
+      - name: Setup Dart Language
+        uses: dart-lang/setup-dart@v1.3
+      - name: Get Project Version
+        run: "dart workflows_utils/get_project_version.dart"
       # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34
@@ -61,7 +63,7 @@ jobs:
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
         working-directory: android
 
-      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from }} to:${{ github.event.inputs.promote_to }}
+      - run: bundle exec fastlane android promote from:${{ github.event.inputs.promote_from }} to:${{ github.event.inputs.promote_to }} version_name:${{ env.version_name }} version_code:${{ env.version_code }}
         working-directory: android
         env:
             PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}

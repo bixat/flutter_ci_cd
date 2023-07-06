@@ -28,42 +28,25 @@ on:
 
 permissions: read-all
 jobs:
-  # build_web:
-  #   name: Build Flutter (Web)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: subosito/flutter-action@v1
-  #     with:
-  #         channel: 'stable'
-  #   - run: flutter pub get
-  #   - run: flutter config --enable-web
-  #   - run: flutter build web
-  #   - name: Archive Production Artifact
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: web-build
-  #       path: build/web
+  build_web:
+    name: Build Flutter (Web)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+          channel: 'stable'
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting --public web-build
+      env:
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        PROJECT_ID: default
 
-  # deploy_web:
-  #   name: Deploy Web to Firebase Hosting
-  #   needs: build_web
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@master
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: web-build
-  #         path: web-build
-  #     - name: Deploy to Firebase
-  #       uses: w9jds/firebase-action@master
-  #       with:
-  #         args: deploy --only hosting --public web-build
-  #       env:
-  #         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  #         PROJECT_ID: default
   deploy-android:
     name: Build & Deploy Android Release to ${{ github.event.inputs.track }} track
     runs-on: ubuntu-latest
@@ -76,8 +59,6 @@ jobs:
       # Checkout Repo code
       - name: Checkout Repo
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.REPO_TOKEN }}
       # Setup Ruby, Bundler, Gemfile & flutter dependencies & Build Android
       - name: Setup Fastlane
         uses: ruby/setup-ruby@72d59482210349c1114eca714b6c5df19fbbec34

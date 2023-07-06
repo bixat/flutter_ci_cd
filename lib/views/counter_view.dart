@@ -1,21 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_ci_cd/models/counter_model.dart';
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
+/// A StatelessWidget that displays a counter example.
 class CounterExample extends StatelessWidget {
   final String title;
+
+  /// Constructs a CounterExample widget with [title].
   CounterExample({Key? key, required this.title}) : super(key: key);
+
   final Counter counter = Counter();
+
   @override
   Widget build(BuildContext context) {
-    // Rocket.add(sizeDesign, Size(100, 200));
-    // Rocket.add(sizeScreen, Size(context.width, context.height));
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
       body: Container(
-        //width: 10.w,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
@@ -27,14 +29,33 @@ class CounterExample extends StatelessWidget {
             ),
             RocketView(
               model: counter,
-              // call & secondsOfStream & callType optional parameters you can use RocketView Widget without them
+
+              /// The function that will be called when the RocketView
+              /// is triggered by a stream.
+              ///
+              /// This function will increment the count value of the `Counter`
+              /// instance after a delay of one second.
               call: add,
+
+              /// The type of call that will trigger the `call` function.
+              ///
+              /// We are using `CallType.callAsStream` to increment the counter
+              /// every second.
               callType: CallType.callAsStream,
+
+              /// The number of seconds to wait between each stream of
+              /// data from the server.
               secondsOfStream: 1,
-              builder: (context) {
+
+              /// The widget builder function that will be called whenever
+              /// the RocketView is updated.
+              ///
+              /// In this case, we are returning a `Text` widget that displays
+              /// the current count value of the `Counter` instance.
+              builder: (context, modelState) {
                 return Text(
                   counter.count.toString(),
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 );
               },
             )
@@ -43,16 +64,22 @@ class CounterExample extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
-        //change your field by json structure
+
+        /// The function that will be called when the user clicks
+        /// the floating action button.
+        ///
+        /// This function will decrement the count value of the `Counter`
+        /// instance by one.
         onPressed: () {
           counter.fromJson({Counter.countKey: counter.count - 1});
         },
-        tooltip: 'Increment',
+        tooltip: 'Decrement',
         child: const Icon(Icons.minimize),
       ),
     );
   }
 
+  /// Asynchronously increments the count after a delay of one second.
   Future<void> add() async {
     await Future.delayed(const Duration(seconds: 1));
     counter.fromJson({Counter.countKey: counter.count + 1});

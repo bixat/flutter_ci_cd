@@ -1,4 +1,4 @@
-import 'package:mvc_rocket/mvc_rocket.dart';
+import 'package:flutter_rocket/flutter_rocket.dart';
 
 const String photoAlbumIdField = "albumId";
 const String photoIdField = "id";
